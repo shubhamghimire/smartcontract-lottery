@@ -1,6 +1,6 @@
 # 0.012
 # 120000000000000000
-from brownie import Lottery, accounts
+from brownie import Lottery, accounts, config, network
 from web3 import Web3
 
 
