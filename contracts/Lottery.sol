@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.6.6;
 import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
-import "openzeppelin/contracts/access/Ownable.sol";
+import "@openzeppelin/contracts/access/Ownable.sol";
 
-contract Lottery {
+contract Lottery is Ownable {
     address payable[] public players;
     uint256 public usdEntryFee;
     AggregatorV3Interface internal ethUsdPriceFeed;
@@ -49,5 +49,16 @@ contract Lottery {
         lottery_state = LOTTERY_STATE.OPEN;
     }
 
-    function endLottery() public {}
+    function endLottery() public onlyOwner {
+        uint256(
+            keccak256(
+                abi.encodePacked(
+                    nonce, // nonce is predictable (aka, transaction number)
+                    msg.sender, // msg.sender is predictable
+                    block.difficulty, // can actually be manipulated by the miners!
+                    block.timestamp // timestamp is predictable
+                )
+            )
+        ) % players.length;
+    }
 }
