@@ -2,8 +2,9 @@
 pragma solidity ^0.6.6;
 import "@chainlink/contracts/src/v0.6/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
+import "@chainlink/contracts/src/v0.8/VRFConsumerBase.sol";
 
-contract Lottery is Ownable {
+contract Lottery is VRFConsumerBase, Ownable {
     address payable[] public players;
     uint256 public usdEntryFee;
     AggregatorV3Interface internal ethUsdPriceFeed;
@@ -50,15 +51,16 @@ contract Lottery is Ownable {
     }
 
     function endLottery() public onlyOwner {
-        uint256(
-            keccak256(
-                abi.encodePacked(
-                    nonce, // nonce is predictable (aka, transaction number)
-                    msg.sender, // msg.sender is predictable
-                    block.difficulty, // can actually be manipulated by the miners!
-                    block.timestamp // timestamp is predictable
-                )
-            )
-        ) % players.length;
+        // uint256(
+        //     keccak256(
+        //         abi.encodePacked(
+        //             nonce, // nonce is predictable (aka, transaction number)
+        //             msg.sender, // msg.sender is predictable
+        //             block.difficulty, // can actually be manipulated by the miners!
+        //             block.timestamp // timestamp is predictable
+        //         )
+        //     )
+        // ) % players.length;
+        lottery_state = LOTTERY_STATE.CALCULATING_WINNER;
     }
 }
