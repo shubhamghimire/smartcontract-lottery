@@ -1,4 +1,4 @@
-from brownie import accounts, network, config
+from brownie import accounts, network, config, Contract
 
 FORKED_LOCAL_ENVIRONMENTS = ["mainnet-fork", "mainnet-fork-dev"]
 LOCAL_BLOCKCHAIN_ENVIRONMENTS = ["development", "ganache-local"]
@@ -38,4 +38,27 @@ def get_contract(contract_name):
 
     """
     contract_type = contract_to_mock[contract_name]
-    if network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS
+    if network.show_active() in LOCAL_BLOCKCHAIN_ENVIRONMENTS:
+        if len(contract_type) <= 0:
+            # MockV3Aggregator.length
+            deploy_mocks()
+        contract = contract_type[-1]
+        # MockV3Aggregator[-1]
+    else:
+        contract_address = config["networks"][network.show_active()][contract_name]
+        # address
+        # ABI
+        contract = Contract.from_abi(
+            contract_type._name, contract_address, contract_type.abi
+        )
+        # MockV3Aggregator.abi
+
+
+DECIMALS = 8
+INITIAL_VALUE = 200000000000
+
+
+def deploy_mocks(decimal=DECIMALS, initial_value=INITIAL_VALUE):
+    account = get_account()
+    MockV3Aggregator.deploy(decimals, initial_value, {"from": account})
+    print("Deployed!")
